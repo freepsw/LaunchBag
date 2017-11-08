@@ -73,7 +73,7 @@
 # ansible 내부적으로는 아래의 명령어를 Rancher API로 변환하여 호출한다.
 > docker run -it -p 8888:8888 -e GRANT_SUDO=yes  --user root  --name launchbag-datascience  freepsw/launchbag-juypter-r:v0.1.1  start-notebook.sh --NotebookApp.token=''
 
-# RancherAPI로 변환하여 호출하는 방식
+# RancherAPI로 변환하여 호출하는 방식 (uri module로 변경 필요)
 > curl -u "${CATTLE_ACCESS_KEY}:${CATTLE_SECRET_KEY}" \
 -X POST \
 -H 'Accept: application/json' \
@@ -90,9 +90,37 @@
 
 ## [STEP 3] LaunchBag ELK stacks
 
+### 01. LaunchBag 서비스 배포 구성
+- images (서비스 구성도)
+- logstash + elasticsearch + kibana를 container로 구동
+- 사용자가 전달한 logstash config파일을 이용하여 데이터를 수집하고,
+- 사용자가 지정한 kibana dashboard를 자동으로 kibana에 import하여,
+- 별도의 사용자 세팅없이 데이터 수집~저장~시각화 화면을 자동으로 구현
+
+#### LaunchBag 설정 값
+- Default는 아무 설정이 필요없다. (실행시 logstash 설정이 없으므로, 데이터 수집을 하지 않음)
+- 사용자가 추가로 설정할 수 있는 정보
+  - [수집 config 설정] : logstash config 설정 (수집대상, 데이터 처리 로직, 저장대상)
+  - [데이터 파일] : 배치로 한번에 수집하는 경우, 수집할 데이터를 업로드
+- 시스템이 자동으로 설정하는 정보
+  - [서비스 명]
+    * container로 구동될 서비스 고유 명칭 (개인별로 고유한 값, 예를 들어 launchbag-datascience)
+    * 중복되지 않도록 시스템에서 "시간+Seq"로 일련번호 생성 필요
+  - [Port]
+    * 하나의 서버에 여러개의 elasticsearch, kibana가 동작할 수 있도록 중복없는 port 할당
+
+### 02.Run LaunchBag
+- Web 화면에서 "Launch" 버튼을 클릭하면,
+- 서비스가 배포되고, 잠시 후에 접속할 수 있는 Kibana url이 표시된다.
+- 이제부터 분석을 시작할 수 있다. (약 10초 이내)
 ```
-> docker run -it --rm logstash -e 'input { stdin { } } output { stdout { elasticsearch { hosts => "http://elasticsearch:9200"} }'
+> ansible-playbook -i inventories/hosts launchbag_elk.yml -e "container_name=launchbag-elk2"
 ```
+
+### 03. Kibana 접속 및 수집 데이터 모니터링 (dashboard)
+- 웹에서 제공하는 link를 클릭하면,
+- 사용자가 미리 생성했던 dashboard를 바로 화면에 보여준다. (사용자 개입이 전혀 없음)
+
 
 ## [ ETC ]
 ### 01.  R package 설치오류 해결
