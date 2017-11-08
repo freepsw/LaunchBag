@@ -3,7 +3,7 @@ staging
 hosts
 rancher-hosts
 dump
-data
+datascience
 
 # Directories #
 /build/
