@@ -122,6 +122,10 @@
 - 사용자가 미리 생성했던 dashboard를 바로 화면에 보여준다. (사용자 개입이 전혀 없음)
 
 
+## [STEP 4] Launch Apache Zeppelin on Apache Spark Cluster
+- https://github.com/gettyimages/docker-spark/blob/master/docker-compose.yml
+
+
 ## [ ETC ]
 ### 01.  R package 설치오류 해결
 #### [Problem - package 설치시 library 오류]
