@@ -3,5 +3,6 @@
 "system": false,
 "dockerCompose": "{    \"version\": \"2\",    \"services\": {       \"{{ container_zepl_name }}\": {          \"image\": \"apache/zeppelin:0.7.3\",          \"stdin_open\": true,          \"volumes\": [             \"/home/{{ docker_users }}/zeppelin/data:/tmp\"          ],          \"tty\": true,          \"ports\": [             \"{{ zepl_port }}:8080/tcp\"          ],          \"labels\": {             \"io.rancher.container.pull_image\": \"always\"          }       }    } }",
 "rancherCompose": "{\r\n   \"version\": \"2\",\r\n   \"services\": {\r\n      \"{{ container_zepl_name }}\": {\r\n         \"scale\": 1,\r\n         \"start_on_create\": true\r\n      }\r\n   }\r\n}",
+"startOnCreate": true,
 "binding": null
 }

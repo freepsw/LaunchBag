@@ -32,25 +32,25 @@
 #   debug:
 #     msg: "{{ out_shell['json']['actions']['activateservices']}}"
 
-- name : set stack id
-  set_fact:
-    elk_activate: "{{ out_shell['json']['actions']['activateservices']}}"
-
-- name : Activate elk service
-  shell: >
-   curl -u "BAF2FFEB1637F9A4F735:pitwPkiXLDYQnQrJWDo618q2REVnxVuNZ2AM2Bq2"
-   -X POST
-   -H 'Accept: application/json'
-   -H 'Content-Type: application/json'
-   -d '{}'
-   "{{ elk_activate }}"
+# - name : set stack id
+#   set_fact:
+#     elk_activate: "{{ out_shell['json']['actions']['activateservices']}}"
+#
+# - name : Activate elk service
+#   shell: >
+#    curl -u "BAF2FFEB1637F9A4F735:pitwPkiXLDYQnQrJWDo618q2REVnxVuNZ2AM2Bq2"
+#    -X POST
+#    -H 'Accept: application/json'
+#    -H 'Content-Type: application/json'
+#    -d '{}'
+#    "{{ elk_activate }}"
 
 
 - name: Check Zeppelin server is running
   action: uri
       method=GET
       status_code=200
-      url="http://{{ rancher_server}}:{{ zepl_port }}" return_content=yes
+      url="http://{{ rancher_agent }}:{{ zepl_port }}" return_content=yes
   register: zepl_result
   until: zepl_result.status == 200
   retries: 10
@@ -69,7 +69,7 @@
   uri:
     headers:
       Content-Type: "application/json"
-    url: http://{{ rancher_server }}:{{ zepl_port }}/api/notebook/import
+    url: http://{{ rancher_agent }}:{{ zepl_port }}/api/notebook/import
     method: POST
     body: "{{ notebook }}"
     force_basic_auth: yes

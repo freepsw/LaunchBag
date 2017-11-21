@@ -2,7 +2,7 @@
 
 
 - name: Run Elk Service
-  hosts: "Rancher"
+  hosts: "Agents"
   vars_files:
    - inventories/group_vars/main.yml
   roles:

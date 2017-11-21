@@ -32,6 +32,10 @@
       url={{ rancher_token_url.json['links']['self'] }} return_content=yes
   register: rancher_token
 
+- name: Print output 
+  debug:
+    msg: "{{ rancher_token }}"
+
 - name: Check if the rancher-agent is running
   command: docker ps -a
   register: containers
