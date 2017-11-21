@@ -90,5 +90,4 @@
 
 - name: Run Data generator again
   shell: python ./data_generator.py </dev/null >/dev/null 2>&1
-  async: 1000
-  poll: 0
+  async: 10000
