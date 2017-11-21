@@ -1,5 +1,5 @@
 ---
-# Run jupyter notebook for data science
+# Run jupyter notebook for zeppelin
 - name: Install the curl command for rancher api
   yum:
    name: curl
@@ -76,6 +76,16 @@
     body_format: json
     status_code: 201 # Created
   register: out_shell
+
+
+- name: Copy data set to server
+  copy:
+   src: "{{ item }}"
+   dest: "{{ zepl_file_path }}"
+   force: no
+  with_fileglob:
+       - "data/zeppelin/*"
+
 # - name : Run launchbag services using curl command (uri 모듈로 변경 필요)
 #   shell: "{{ json_contenst }}"
 #   register: out_shell

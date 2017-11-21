@@ -25,3 +25,4 @@ elk_file_path: "~/"
 # launchbag-zeppelin config
 container_zepl_name: "launchbag-zeppelin"
 zepl_port: "8085"
+zepl_file_path: "~/data"
