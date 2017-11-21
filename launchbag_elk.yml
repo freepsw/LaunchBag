@@ -1,7 +1,7 @@
 ---
 
 
-- name: Run rancher Service
+- name: Run Elk Service
   hosts: "Rancher"
   vars_files:
    - inventories/group_vars/main.yml

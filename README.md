@@ -123,8 +123,70 @@
 
 
 ## [STEP 4] Launch Apache Zeppelin on Apache Spark Cluster
-- https://github.com/gettyimages/docker-spark/blob/master/docker-compose.yml
 
+### 01. LaunchBag 서비스 배포 구성
+- images (서비스 구성도)
+- zeppelin를 container로 구동하고,
+- 사용자가 정의한 데이터와 notebook을 zeppelin server로 import (REST API)
+
+#### LaunchBag 설정 값
+- Default는 아무 설정이 필요없다. (실행시 logstash 설정이 없으므로, 데이터 수집을 하지 않음)
+- 사용자가 추가로 설정할 수 있는 정보
+  - [데이터 파일] : Zeppelin에서 분석할 데이터
+- 시스템이 자동으로 설정하는 정보
+  - [서비스 명]
+    * container로 구동될 서비스 고유 명칭 (개인별로 고유한 값, 예를 들어 launchbag-zeppelin073)
+    * 중복되지 않도록 시스템에서 "시간+Seq"로 일련번호 생성 필요
+  - [Port]
+    * 하나의 서버에 여러개의 zeppelin server 동작할 수 있도록 중복없는 port 할당
+
+### 02.Run LaunchBag
+- Web 화면에서 "Launch" 버튼을 클릭하면,
+- 서비스가 배포되고, 잠시 후에 접속할 수 있는 Zeppelin url이 표시된다.
+- 이제부터 분석을 시작할 수 있다. (약 10초 이내)
+```
+> ansible-playbook -i inventories/hosts launchbag_zeppelin.yml -e "container_zepl_name=ZeppelinTest zepl_port=8089"
+```
+
+
+### Zeppelin docker guide
+  - https://zeppelin.apache.org/docs/0.7.3/install/docker.html
+
+  - https://github.com/gettyimages/docker-spark/blob/master/docker-compose.yml
+  - https://hub.docker.com/r/tssp/apache-spark/~/dockerfile/
+  https://github.com/StratoSpire/spark-docker
+
+### Zeppelin Rest API guide
+  - https://zeppelin.apache.org/docs/0.6.1/rest-api/rest-notebook.html#import-a-notebook
+
+#### Rancher API Sample
+
+- Rancher API HTTP Request
+```
+HTTP/1.1 POST /v2-beta/projects/1a5/stacks
+Host: x.x.x.x:8080
+Accept: application/json
+Content-Type: application/json
+Content-Length: 680
+
+{
+"name": "zeppelin073",
+"system": false,
+"dockerCompose": "{    \"version\": \"2\",    \"services\": {       \"zeppelin073\": {          \"image\": \"apache/zeppelin:0.7.3\",          \"stdin_open\": true,          \"volumes\": [             \"/home/rts/zeppelin/data:/tmp\"          ],          \"tty\": true,          \"ports\": [             \"8085:8080/tcp\"          ],          \"labels\": {             \"io.rancher.container.pull_image\": \"always\"          }       }    } }",
+"rancherCompose": "{\r\n   \"version\": \"2\",\r\n   \"services\": {\r\n      \"zeppelin073\": {\r\n         \"scale\": 1,\r\n         \"start_on_create\": true\r\n      }\r\n   }\r\n}",
+"binding": null
+}
+```
+
+- Rancher API curl request
+```
+curl -u "${CATTLE_ACCESS_KEY}:${CATTLE_SECRET_KEY}" \
+-X POST \
+-H 'Accept: application/json' \
+-H 'Content-Type: application/json' \
+-d '{"name":"zeppelin073", "system":false, "dockerCompose":"{ \"version\": \"2\", \"services\": { \"zeppelin073\": { \"image\": \"apache/zeppelin:0.7.3\", \"stdin_open\": true, \"volumes\": [ \"/home/rts/zeppelin/data:/tmp\" ], \"tty\": true, \"ports\": [ \"8085:8080/tcp\" ], \"labels\": { \"io.rancher.container.pull_image\": \"always\" } } } }", "rancherCompose":"{\r\n \"version\": \"2\", \r\n \"services\": {\r\n \"zeppelin073\": {\r\n \"scale\": 1, \r\n \"start_on_create\": true\r\n }\r\n }\r\n}", "binding":null}' \
+'http://x.x.x.x:8080/v2-beta/projects/1a5/stacks'
+```
 
 ## [ ETC ]
 ### 01.  R package 설치오류 해결
